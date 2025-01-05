@@ -45,9 +45,9 @@ jobs:
             cpp_compiler: g++
             container: dockcross/manylinux_2_28-x64:latest
         exclude:
-            - os: macos-14
+            - os: macos-latest
               toolchain: msvc
-            - os: macos-14
+            - os: macos-latest
               toolchain: gcc
             - os: ubuntu-22.04
               toolchain: msvc
