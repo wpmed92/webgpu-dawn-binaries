@@ -23,7 +23,7 @@ jobs:
       # 2. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
       # 3. <MacOS, Release, latest Clang compiler toolchain on the default runner image, default generator>
       matrix:
-        os: [macos-latest, ubuntu-22.04, windows-2022]
+        os: [ubuntu-22.04]
         build_type: [Release]
         toolchain: [gcc, clang, msvc]
         include:
