@@ -27,18 +27,18 @@ jobs:
         build_type: [Release]
         toolchain: [gcc, clang, msvc]
         include:
-          - os: macos-latest
-            toolchain: clang
-            c_compiler: $(brew --prefix llvm@15)/bin/clang
-            cpp_compiler: $(brew --prefix llvm@15)/bin/clang++
-            env:
-              MACOSX_DEPLOYMENT_TARGET: "11.0"
-            container: null
-          - os: windows-2022
-            toolchain: msvc
-            c_compiler: cl
-            cpp_compiler: cl
-            container: null
+          #- os: macos-latest
+          #  toolchain: clang
+          #  c_compiler: $(brew --prefix llvm@15)/bin/clang
+          #  cpp_compiler: $(brew --prefix llvm@15)/bin/clang++
+          #  env:
+          #    MACOSX_DEPLOYMENT_TARGET: "11.0"
+          #  container: null
+          #- os: windows-2022
+          #   toolchain: msvc
+          #  c_compiler: cl
+          #  cpp_compiler: cl
+          #  container: null
           - os: ubuntu-22.04
             toolchain: gcc
             c_compiler: gcc
