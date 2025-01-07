@@ -27,13 +27,13 @@ jobs:
         build_type: [Release]
         toolchain: [gcc, clang, msvc]
         include:
-          #- os: macos-latest
-          #  toolchain: clang
-          #  c_compiler: $(brew --prefix llvm@15)/bin/clang
-          #  cpp_compiler: $(brew --prefix llvm@15)/bin/clang++
-          #  env:
-          #    MACOSX_DEPLOYMENT_TARGET: "11.0"
-          #  container: null
+          - os: macos-latest
+            toolchain: clang
+            c_compiler: $(brew --prefix llvm@15)/bin/clang
+            cpp_compiler: $(brew --prefix llvm@15)/bin/clang++
+            env:
+              MACOSX_DEPLOYMENT_TARGET: "11.0"
+            container: null
           #- os: windows-2022
           #   toolchain: msvc
           #  c_compiler: cl
@@ -99,6 +99,12 @@ jobs:
       with:
         name: dist-${{ matrix.os }}-${{ matrix.build_type }}
         path: dist
+
+    - name: Check xcode
+      if: matrix.os == 'macos-latest'
+      run: |
+        xcodebuild -version
+        ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
 
     - name: Aniticipate crash dumps on windows
       if: matrix.os == 'windows-2022'
