@@ -27,7 +27,7 @@ jobs:
         build_type: [Release]
         toolchain: [gcc, clang, msvc]
         include:
-          - os: macos-latest
+          - os: macos-14
             toolchain: clang
             c_compiler: $(brew --prefix llvm@15)/bin/clang
             cpp_compiler: $(brew --prefix llvm@15)/bin/clang++
@@ -45,9 +45,9 @@ jobs:
             cpp_compiler: g++
             container: dockcross/manylinux_2_28-x64:latest
         exclude:
-            - os: macos-latest
+            - os: macos-14
               toolchain: msvc
-            - os: macos-latest
+            - os: macos-14
               toolchain: gcc
             - os: ubuntu-22.04
               toolchain: msvc
@@ -76,7 +76,7 @@ jobs:
 
     
     - name: Check xcode
-      if: matrix.os == 'macos-latest'
+      if: matrix.os == 'macos-14'
       run: |
         xcodebuild -version
         ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
