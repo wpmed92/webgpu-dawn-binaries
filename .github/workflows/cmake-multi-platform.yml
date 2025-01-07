@@ -23,7 +23,7 @@ jobs:
       # 2. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
       # 3. <MacOS, Release, latest Clang compiler toolchain on the default runner image, default generator>
       matrix:
-        os: [macos-14, ubuntu-22.04]
+        os: [macos-14,ubuntu-22.04]
         build_type: [Release]
         toolchain: [gcc, clang, msvc]
         include:
@@ -73,6 +73,13 @@ jobs:
       if: matrix.container == 'dockcross/manylinux_2_28-x64:latest'
       run: >
         dnf install -y libxcb libxcb-devel libX11-xcb libxkbcommon libxkbcommon-devel libxkbcommon-x11-devel mesa-vulkan-drivers
+
+    - name: Check xcode
+      if: matrix.os == 'macos-14'
+      run: |
+        xcodebuild -version
+        ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
+        ls /Applications | grep Xcode
 
     - name: Configure CMake
       run: >
