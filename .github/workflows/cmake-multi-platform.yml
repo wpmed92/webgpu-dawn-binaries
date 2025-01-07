@@ -80,6 +80,7 @@ jobs:
       run: |
         xcodebuild -version
         ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
+        ls /Applications | grep Xcode
     - name: Configure CMake
       run: >
         cmake -B build
