@@ -74,6 +74,12 @@ jobs:
       run: >
         dnf install -y libxcb libxcb-devel libX11-xcb libxkbcommon libxkbcommon-devel libxkbcommon-x11-devel mesa-vulkan-drivers
 
+    
+    - name: Check xcode
+      if: matrix.os == 'macos-latest'
+      run: |
+        xcodebuild -version
+        ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
     - name: Configure CMake
       run: >
         cmake -B build
@@ -99,12 +105,6 @@ jobs:
       with:
         name: dist-${{ matrix.os }}-${{ matrix.build_type }}
         path: dist
-
-    - name: Check xcode
-      if: matrix.os == 'macos-latest'
-      run: |
-        xcodebuild -version
-        ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
 
     - name: Aniticipate crash dumps on windows
       if: matrix.os == 'windows-2022'
