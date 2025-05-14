@@ -23,7 +23,7 @@ jobs:
       # 2. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
       # 3. <MacOS, Release, latest Clang compiler toolchain on the default runner image, default generator>
       matrix:
-        os: [macos-13,ubuntu-22.04]
+        os: [macos-13,ubuntu-22.04,windows-2022]
         build_type: [Release]
         toolchain: [gcc, clang, msvc]
         include:
@@ -34,11 +34,11 @@ jobs:
             env:
               MACOSX_DEPLOYMENT_TARGET: "11.0"
             container: null
-          #- os: windows-2022
-          #   toolchain: msvc
-          #  c_compiler: cl
-          #  cpp_compiler: cl
-          #  container: null
+          - os: windows-2022
+            toolchain: msvc
+            c_compiler: cl
+            cpp_compiler: cl
+            container: null
           - os: ubuntu-22.04
             toolchain: gcc
             c_compiler: gcc
@@ -75,6 +75,10 @@ jobs:
         xcodebuild -version
         ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
         ls /Applications | grep Xcode
+
+    - name: Setup MSVC environment
+      if: matrix.os == 'windows-2022' && matrix.toolchain == 'msvc'
+      uses: ilammy/msvc-dev-cmd@v1
 
     - name: Configure CMake
       run: >
