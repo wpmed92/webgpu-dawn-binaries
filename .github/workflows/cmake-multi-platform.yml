@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13, ubuntu-22.04, windows-2025, ubuntu-24.04-arm]
+        os: [macos-13, ubuntu-22.04, windows-2025, ubuntu-22.04-arm]
         build_type: [Release]
         toolchain: [gcc, clang, msvc]
         include:
@@ -39,7 +39,7 @@ jobs:
             c_compiler: gcc
             cpp_compiler: g++
             container: dockcross/manylinux_2_28-x64:latest
-          - os: ubuntu-24.04-arm
+          - os: ubuntu-22.04-arm
             toolchain: gcc
             c_compiler: gcc
             cpp_compiler: g++
@@ -57,9 +57,9 @@ jobs:
             toolchain: clang
           - os: windows-2025
             toolchain: gcc
-          - os: ubuntu-24.04-arm
+          - os: ubuntu-22.04-arm
             toolchain: msvc
-          - os: ubuntu-24.04-arm
+          - os: ubuntu-22.04-arm
             toolchain: clang
     name: build-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.toolchain }}
     runs-on: ${{ matrix.os }}
@@ -72,7 +72,7 @@ jobs:
       if: contains(matrix.os, 'ubuntu') && matrix.container == null
       run: |
         sudo apt-get update
-        sudo apt-get install -y libxcb1 libxcb1-dev libxkbcommon0 libxkbcommon-dev libxkbcommon-x11-dev mesa-vulkan-drivers
+        sudo apt-get install -y libx11-dev libxcb1 libxcb1-dev libxkbcommon0 libxkbcommon-dev libxkbcommon-x11-dev mesa-vulkan-drivers
 
     - name: Set up dependencies on linux container
       if: matrix.container == 'dockcross/manylinux_2_28-x64:latest'
