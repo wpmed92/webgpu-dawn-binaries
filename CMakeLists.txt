@@ -69,9 +69,6 @@ install(TARGETS dawn
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   FILE_SET dawn_webgpu_header)
-install(
-  DIRECTORY "${dawn_BINARY_DIR}/gen/emscripten-bits"
-  TYPE LIB)
 # installs helpful package info so that folks can locate us via cmake find_package or pkg-config.  
 install(EXPORT dawn-targets
   FILE dawnTargets.cmake

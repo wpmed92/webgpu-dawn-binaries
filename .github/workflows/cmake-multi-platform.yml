@@ -17,24 +17,19 @@ jobs:
   build:
     strategy:
       fail-fast: false
-  
-      # Set up a matrix to run the following 3 configurations:
-      # 1. <Windows, Release, latest MSVC compiler toolchain on the default runner image, default generator>
-      # 2. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
-      # 3. <MacOS, Release, latest Clang compiler toolchain on the default runner image, default generator>
       matrix:
-        os: [macos-14, ubuntu-22.04, windows-2022]
+        os: [macos-13, ubuntu-22.04, windows-2025, ubuntu-22.04-arm]
         build_type: [Release]
         toolchain: [gcc, clang, msvc]
         include:
-          - os: macos-14
+          - os: macos-13
             toolchain: clang
             c_compiler: $(brew --prefix llvm@15)/bin/clang
             cpp_compiler: $(brew --prefix llvm@15)/bin/clang++
             env:
               MACOSX_DEPLOYMENT_TARGET: "11.0"
             container: null
-          - os: windows-2022
+          - os: windows-2025
             toolchain: msvc
             c_compiler: cl
             cpp_compiler: cl
@@ -44,43 +39,62 @@ jobs:
             c_compiler: gcc
             cpp_compiler: g++
             container: dockcross/manylinux_2_28-x64:latest
+          - os: ubuntu-22.04-arm
+            toolchain: gcc
+            c_compiler: gcc
+            cpp_compiler: g++
+            container: null
         exclude:
-            - os: macos-14
-              toolchain: msvc
-            - os: macos-14
-              toolchain: gcc
-            - os: ubuntu-22.04
-              toolchain: msvc
-            - os: ubuntu-22.04
-              toolchain: clang
-            - os: windows-2022
-              toolchain: clang
-            - os: windows-2022
-              toolchain: gcc
+          - os: macos-13
+            toolchain: msvc
+          - os: macos-13
+            toolchain: gcc
+          - os: ubuntu-22.04
+            toolchain: msvc
+          - os: ubuntu-22.04
+            toolchain: clang
+          - os: windows-2025
+            toolchain: clang
+          - os: windows-2025
+            toolchain: gcc
+          - os: ubuntu-22.04-arm
+            toolchain: msvc
+          - os: ubuntu-22.04-arm
+            toolchain: clang
     name: build-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.toolchain }}
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
-    env:
-      SCCACHE_GHA_ENABLED: "true"
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Use sccache-cache
-      uses: mozilla-actions/sccache-action@v0.0.3
-  
     - name: Set up dependencies on linux
+      if: contains(matrix.os, 'ubuntu') && matrix.container == null
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libx11-dev libx11-xcb-dev libxcb1 libxcb1-dev libxkbcommon0 libxkbcommon-dev libxkbcommon-x11-dev mesa-vulkan-drivers
+
+    - name: Set up dependencies on linux container
       if: matrix.container == 'dockcross/manylinux_2_28-x64:latest'
-      run: >
+      run: |
         dnf install -y libxcb libxcb-devel libX11-xcb libxkbcommon libxkbcommon-devel libxkbcommon-x11-devel mesa-vulkan-drivers
+
+    - name: Check xcode
+      if: matrix.os == 'macos-13'
+      run: |
+        xcodebuild -version
+        ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
+        ls /Applications | grep Xcode
+
+    - name: Setup MSVC environment
+      if: matrix.os == 'windows-2025' && matrix.toolchain == 'msvc'
+      uses: ilammy/msvc-dev-cmd@v1
 
     - name: Configure CMake
       run: >
         cmake -B build
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        -DCMAKE_C_COMPILER_LAUNCHER=sccache
-        -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S .
 
@@ -100,8 +114,8 @@ jobs:
         name: dist-${{ matrix.os }}-${{ matrix.build_type }}
         path: dist
 
-    - name: Aniticipate crash dumps on windows
-      if: matrix.os == 'windows-2022'
+    - name: Anticipate crash dumps on windows
+      if: matrix.os == 'windows-2025'
       working-directory: build
       run: |
         mkdir CrashDumps
